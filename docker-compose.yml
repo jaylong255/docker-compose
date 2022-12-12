@@ -26,6 +26,18 @@ services:
     networks:
       - myappyo
 
+  nginx:
+    container_name: nginx
+    build:
+      args:
+        UPSTREAM: local
+      context: .
+      target: web
+    ports:
+      - "80:80"
+    networks:
+      - myappyo
+
 volumes:
   mysqldata: {}
 
