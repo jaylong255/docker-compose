@@ -26,6 +26,17 @@ services:
     networks:
       - myappyo
 
+  php:
+    container_name: php
+    build:
+      context: .
+      target: php
+    networks:
+      - myappyo
+    volumes:
+      - ./laravel:/app
+    image: myappyo_php
+
   nginx:
     container_name: nginx
     build:
