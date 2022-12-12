@@ -2,19 +2,42 @@
 ARG HOST_USER_UID=1001
 ARG HOST_USER_GID=1001
 
-FROM ubuntu:latest AS worker
+# Add a target for php cli to use as a worker
+FROM php:8.0.2-cli AS php
+
+ARG HOST_USER_UID
+ARG HOST_USER_GID
+
+RUN apt-get update
 
 RUN apt-get update && apt-get install -y \
-    sudo \
-    libicu-dev \
-    libbz2-dev \
-    libjpeg-dev \
-    libmcrypt-dev \
-    libreadline-dev \
+    build-essential \
+    libzip-dev \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libwebp-dev libjpeg62-turbo-dev libpng-dev libxpm-dev \
+    libfreetype6 \
     libfreetype6-dev \
-    g++\
-    nodejs\
-    npm
+    locales \
+    zip \
+    jpegoptim optipng pngquant gifsicle \
+    vim \
+    unzip \
+    git \
+    curl \
+    # mysql \
+    libxml2-dev 
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Add the user that will be expected
+RUN addgroup --gid ${HOST_USER_GID} nginx
+RUN adduser --system --no-create-home --uid $HOST_USER_UID --ingroup nginx webuser
+
+WORKDIR /app
+
+COPY ./laravel /app
 
 FROM nginx:alpine as web
 
